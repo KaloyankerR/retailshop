@@ -1,4 +1,4 @@
-name: Build and SonarQube Analysis
+name: Build and Analyze with SonarQube
 
 on:
   push:
@@ -9,13 +9,24 @@ jobs:
   build:
     name: Build and Analyze
     runs-on: ubuntu-latest
-    permissions: read-all
+
+    services:
+      sonarqube:
+        image: sonarqube:latest
+        ports:
+          - 9000:9000
+        options: >
+          --health-cmd="curl -f http://localhost:9000/api/system/health || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Ensure full clone for accurate analysis
+          fetch-depth: 0
 
       # Step 2: Set up JDK
       - name: Set up JDK 17
@@ -33,21 +44,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      # Step 4: Cache SonarQube dependencies
-      - name: Cache SonarQube packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: |
-            ${{ runner.os }}-sonar
+      # Step 4: Wait for SonarQube to be ready
+      - name: Wait for SonarQube to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:9000/api/system/health | grep -q '"status":"UP"'; then
+              echo "SonarQube is ready!";
+              break;
+            fi
+            echo "Waiting for SonarQube to be ready..."
+            sleep 5
+          done
 
-      # Step 5: Build and Analyze with SonarQube
+      # Step 5: Build and Analyze
       - name: Build and analyze
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Add this secret in GitHub
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}  # Add this secret in GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=PhilipsInterview \
-            -Dsonar.projectName='PhilipsInterview'
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
