@@ -77,6 +77,10 @@
 			<version>1.5.5.Final</version> <!-- Use the same version as above -->
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
