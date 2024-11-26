@@ -1,4 +1,4 @@
-name: Build and Analyze with SonarQube
+name: Build and Test with JaCoCo
 
 on:
   push:
@@ -7,26 +7,13 @@ on:
 
 jobs:
   build:
-    name: Build and Analyze
+    name: Build and Test
     runs-on: ubuntu-latest
-
-    services:
-      sonarqube:
-        image: sonarqube:latest
-        ports:
-          - 9000:9000
-        options: >
-          --health-cmd="curl -f http://localhost:9000/api/system/health || exit 1" 
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=3
 
     steps:
       # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       # Step 2: Set up JDK
       - name: Set up JDK 17
@@ -44,24 +31,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      # Step 4: Wait for SonarQube to be ready
-      - name: Wait for SonarQube to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:9000/api/system/health | grep -q '"status":"UP"'; then
-              echo "SonarQube is ready!";
-              break;
-            fi
-            echo "Waiting for SonarQube to be ready..."
-            sleep 5
-          done
+      # Step 4: Build and Run Tests with JaCoCo
+      - name: Build and Test
+        run: mvn clean verify
 
-      # Step 5: Build and Analyze
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=PhilipsInterview \
-            -Dsonar.host.url=http://localhost:9000 \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # Step 5: Upload JaCoCo Coverage Report
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
