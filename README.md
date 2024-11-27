@@ -35,3 +35,24 @@ I used **Flyway** for managing database migrations. It creates the tables and in
 1. Navigate to the `frontend` folder:
    ```bash
    cd frontend
+2. Install the necessary dependencies:
+   ```bash
+   npm install
+3. Start the React app:
+   ```bash
+   npm start
+
+
+## Additional Configuration
+
+### CORS Configuration
+
+To connect the frontend with the backend, I implemented **CORS (Cross-Origin Resource Sharing)** in the backend. You can find the configuration in the `WebConfig` file.
+
+---
+
+## Need Help?
+
+If you encounter any issues running the program, feel free to contact me at:
+
+- **Email**: [kulovkaloyan@gmail.com](mailto:kulovkaloyan@gmail.com)
