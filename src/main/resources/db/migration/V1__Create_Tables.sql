@@ -30,7 +30,6 @@ CREATE TABLE Inventory (
                            ProductID INT NOT NULL,
                            ShopID INT NOT NULL,
                            Quantity INT NOT NULL,
-                           LastUpdated DATETIME NOT NULL DEFAULT GETDATE(),
                            CONSTRAINT FK_Inventory_Product FOREIGN KEY (ProductID) REFERENCES Product(ProductID),
                            CONSTRAINT FK_Inventory_Shop FOREIGN KEY (ShopID) REFERENCES Shop(ShopID)
 );
