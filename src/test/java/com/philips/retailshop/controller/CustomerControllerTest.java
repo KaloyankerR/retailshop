@@ -1,6 +1,7 @@
 package com.philips.retailshop.controller;
 
 import com.philips.retailshop.dto.CustomerDTO;
+import com.philips.retailshop.dto.SaleDTO;
 import com.philips.retailshop.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,27 +30,66 @@ class CustomerControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    private CustomerDTO createMockCustomer() {
+        return new CustomerDTO(
+                1L,
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                "1234567890",
+                "123 Main St",
+                Collections.emptyList()
+        );
+    }
+
+    private List<CustomerDTO> createMockCustomerList() {
+        return List.of(
+                new CustomerDTO(
+                        1L,
+                        "John",
+                        "Doe",
+                        "john.doe@example.com",
+                        "1234567890",
+                        "123 Main St",
+                        Collections.emptyList()
+                ),
+                new CustomerDTO(
+                        2L,
+                        "Jane",
+                        "Smith",
+                        "jane.smith@example.com",
+                        "9876543210",
+                        "456 Elm St",
+                        Collections.emptyList()
+                )
+        );
+    }
+
     @Test
     void testCreateCustomer() {
-        CustomerDTO mockCustomer = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO mockCustomer = createMockCustomer();
         when(customerService.create(any(CustomerDTO.class))).thenReturn(mockCustomer);
 
         ResponseEntity<?> response = customerController.createCustomer(mockCustomer);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(mockCustomer, response.getBody());
+        assertAll(
+                () -> assertEquals(HttpStatus.CREATED, response.getStatusCode()),
+                () -> assertEquals(mockCustomer, response.getBody())
+        );
         verify(customerService, times(1)).create(mockCustomer);
     }
 
     @Test
     void testGetCustomerById() throws Exception {
-        CustomerDTO mockCustomer = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO mockCustomer = createMockCustomer();
         when(customerService.getById(1L)).thenReturn(mockCustomer);
 
         ResponseEntity<?> response = customerController.getCustomerById(1L);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockCustomer, response.getBody());
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertEquals(mockCustomer, response.getBody())
+        );
         verify(customerService, times(1)).getById(1L);
     }
 
@@ -59,35 +99,38 @@ class CustomerControllerTest {
 
         ResponseEntity<?> response = customerController.getCustomerById(1L);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("Customer not found"));
+        assertAll(
+                () -> assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode()),
+                () -> assertTrue(response.getBody().toString().contains("Customer not found"))
+        );
         verify(customerService, times(1)).getById(1L);
     }
 
     @Test
     void testGetAllCustomers() {
-        List<CustomerDTO> mockCustomers = Arrays.asList(
-                new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St"),
-                new CustomerDTO(2L, "Jane", "Smith", "jane.smith@example.com", "9876543210", "456 Elm St")
-        );
+        List<CustomerDTO> mockCustomers = createMockCustomerList();
         when(customerService.getAll()).thenReturn(mockCustomers);
 
         ResponseEntity<?> response = customerController.getAllCustomers();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockCustomers, response.getBody());
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertEquals(mockCustomers, response.getBody())
+        );
         verify(customerService, times(1)).getAll();
     }
 
     @Test
     void testUpdateCustomer() throws Exception {
-        CustomerDTO mockCustomer = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO mockCustomer = createMockCustomer();
         when(customerService.update(eq(1L), any(CustomerDTO.class))).thenReturn(mockCustomer);
 
         ResponseEntity<?> response = customerController.updateCustomer(1L, mockCustomer);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockCustomer, response.getBody());
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertEquals(mockCustomer, response.getBody())
+        );
         verify(customerService, times(1)).update(1L, mockCustomer);
     }
 
@@ -107,8 +150,10 @@ class CustomerControllerTest {
 
         ResponseEntity<?> response = customerController.deleteCustomer(1L);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("Failed to delete customer"));
+        assertAll(
+                () -> assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode()),
+                () -> assertTrue(response.getBody().toString().contains("Failed to delete customer"))
+        );
         verify(customerService, times(1)).delete(1L);
     }
 }

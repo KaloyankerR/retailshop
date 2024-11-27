@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,21 @@ class CustomerServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    private CustomerDTO createMockCustomerDTO(Long id, String firstName, String lastName, String email, String phoneNumber, String address) {
+        return new CustomerDTO(
+                id,
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                address,
+                Collections.emptyList()
+        );
+    }
+
     @Test
     void testCreateCustomer() {
-        CustomerDTO dto = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO dto = createMockCustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
         CustomerEntity entity = new CustomerEntity();
         CustomerEntity savedEntity = new CustomerEntity();
         savedEntity.setCustomerId(1L);
@@ -58,7 +71,7 @@ class CustomerServiceImplTest {
         entity.setCustomerId(1L);
         entity.setFirstName("John");
 
-        CustomerDTO dto = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO dto = createMockCustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
 
         when(repository.findById(1L)).thenReturn(Optional.of(entity));
         when(mapper.toDto(entity)).thenReturn(dto);
@@ -87,8 +100,8 @@ class CustomerServiceImplTest {
         CustomerEntity entity2 = new CustomerEntity();
         entity2.setCustomerId(2L);
 
-        CustomerDTO dto1 = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
-        CustomerDTO dto2 = new CustomerDTO(2L, "Jane", "Smith", "jane.smith@example.com", "9876543210", "456 Elm St");
+        CustomerDTO dto1 = createMockCustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO dto2 = createMockCustomerDTO(2L, "Jane", "Smith", "jane.smith@example.com", "9876543210", "456 Elm St");
 
         when(repository.findAll()).thenReturn(Arrays.asList(entity1, entity2));
         when(mapper.toDto(entity1)).thenReturn(dto1);
@@ -105,7 +118,7 @@ class CustomerServiceImplTest {
         CustomerEntity entity = new CustomerEntity();
         entity.setCustomerId(1L);
 
-        CustomerDTO dto = new CustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
+        CustomerDTO dto = createMockCustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
         CustomerEntity updatedEntity = new CustomerEntity();
         updatedEntity.setCustomerId(1L);
 
@@ -123,7 +136,7 @@ class CustomerServiceImplTest {
 
     @Test
     void testUpdateCustomer_NotFound() {
-        CustomerDTO dto = new CustomerDTO();
+        CustomerDTO dto = createMockCustomerDTO(1L, "John", "Doe", "john.doe@example.com", "1234567890", "123 Main St");
 
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
