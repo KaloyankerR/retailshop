@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Sale")
@@ -31,4 +33,7 @@ public class SaleEntity {
 
     @Column(name = "TotalAmount", nullable = false)
     private Double totalAmount;
+
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SaleItemEntity> items = new ArrayList<>();
 }

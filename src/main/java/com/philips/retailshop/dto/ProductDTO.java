@@ -7,7 +7,6 @@ import lombok.Data;
 
 @Data
 public class ProductDTO {
-
     private Long productId;
 
     @NotBlank(message = "Name is mandatory")
