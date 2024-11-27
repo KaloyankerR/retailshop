@@ -1,9 +1,7 @@
-// src/components/ProductForm.tsx
-
-import React, { useState, useEffect } from 'react';
-import api from '../api/axiosConfig';
-import { Product } from '../types/Product';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import api from "../api/axiosConfig";
+import { Product } from "../types/Product";
+import { useNavigate, useParams } from "react-router-dom";
 
 const ProductForm: React.FC = () => {
   const [product, setProduct] = useState<Partial<Product>>({});
@@ -21,7 +19,7 @@ const ProductForm: React.FC = () => {
       const response = await api.get<Product>(`/api/products/${id}`);
       setProduct(response.data);
     } catch (error) {
-      console.error('Error fetching product:', error);
+      console.error("Error fetching product:", error);
     }
   };
 
@@ -42,17 +40,17 @@ const ProductForm: React.FC = () => {
       if (id) {
         await api.put(`/api/products/${id}`, product);
       } else {
-        await api.post('/api/products', product);
+        await api.post("/api/products", product);
       }
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error saving product:', error);
+      console.error("Error saving product:", error);
     }
   };
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{id ? 'Edit' : 'Add'} Product</h1>
+      <h1 className="text-2xl font-bold mb-4">{id ? "Edit" : "Add"} Product</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium">
@@ -60,7 +58,7 @@ const ProductForm: React.FC = () => {
           </label>
           <input
             name="name"
-            value={product.name || ''}
+            value={product.name || ""}
             onChange={handleChange}
             placeholder="Product Name"
             required
@@ -73,7 +71,7 @@ const ProductForm: React.FC = () => {
           </label>
           <textarea
             name="description"
-            value={product.description || ''}
+            value={product.description || ""}
             onChange={handleChange}
             placeholder="Description"
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -87,7 +85,7 @@ const ProductForm: React.FC = () => {
             name="price"
             type="number"
             step="0.01"
-            value={product.price || ''}
+            value={product.price || ""}
             onChange={handleChange}
             placeholder="Price"
             required

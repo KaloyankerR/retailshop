@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Customer } from '../types/Customer';
-import { Link } from 'react-router-dom';
-import api from '../api/axiosConfig';
+import React, { useEffect, useState } from "react";
+import { Customer } from "../types/Customer";
+import { Link } from "react-router-dom";
+import api from "../api/axiosConfig";
 
 interface CustomerListProps {
   limit?: number;
@@ -15,7 +15,7 @@ const CustomerList: React.FC<CustomerListProps> = ({ limit }) => {
   }, []);
 
   const fetchCustomers = async () => {
-    const response = await api.get<Customer[]>('/api/customers');
+    const response = await api.get<Customer[]>("/api/customers");
     if (limit) {
       setCustomers(response.data.slice(0, limit));
     } else {
@@ -25,7 +25,7 @@ const CustomerList: React.FC<CustomerListProps> = ({ limit }) => {
 
   const deleteCustomer = async (id: number) => {
     await api.delete(`/api/customers/${id}`);
-    setCustomers(customers.filter(customer => customer.customerId !== id));
+    setCustomers(customers.filter((customer) => customer.customerId !== id));
   };
 
   return (
@@ -46,13 +46,19 @@ const CustomerList: React.FC<CustomerListProps> = ({ limit }) => {
           </tr>
         </thead>
         <tbody>
-          {customers.map(customer => (
+          {customers.map((customer) => (
             <tr key={customer.customerId}>
               <td className="py-2 px-4 border-b">
                 {customer.firstName} {customer.lastName}
               </td>
               <td className="py-2 px-4 border-b">{customer.email}</td>
               <td className="py-2 px-4 border-b">
+                <Link
+                  to={`/customers/${customer.customerId}/sales`}
+                  className="btn text-blue-500 hover:underline mr-2"
+                >
+                  View Sales
+                </Link>
                 <Link
                   to={`/edit/${customer.customerId}`}
                   className="btn text-blue-500 hover:underline mr-2"

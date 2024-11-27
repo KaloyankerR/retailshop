@@ -1,3 +1,5 @@
+import { Sale } from "./Sale";
+
 export interface Customer {
   customerId: number;
   firstName: string;
@@ -5,4 +7,5 @@ export interface Customer {
   email: string;
   phoneNumber?: string;
   address?: string;
+  sales: Sale[];
 }

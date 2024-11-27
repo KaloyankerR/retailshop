@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,4 +34,6 @@ public class CustomerDTO {
 
     @Size(max = 255, message = "Address must be less than 255 characters")
     private String address;
+
+    private List<SaleDTO> sales;
 }

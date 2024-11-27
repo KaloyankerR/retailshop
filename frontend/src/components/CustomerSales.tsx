@@ -1,57 +1,77 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { Customer } from '../types/Customer';
+import { Sale } from '../types/Sale';
 import api from '../api/axiosConfig';
 
-interface SaleItem {
-  saleItemId: number;
-  saleId: number;
-  productId: number;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  productName: string;
-}
-
-interface Sale {
-  saleId: number;
-  saleDate: string;
-  totalAmount: number;
-  items: SaleItem[];
-}
-
 const CustomerSales: React.FC = () => {
+  const { customerId: id } = useParams<{ customerId: string }>();
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [sales, setSales] = useState<Sale[]>([]);
-  const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(id);
     if (id) {
-      fetchSales(id);
+      fetchCustomerWithSales(Number(id));
     }
   }, [id]);
 
-  const fetchSales = async (customerId: string) => {
-    const response = await api.get<Sale[]>(`/api/sales`);
-    setSales(response.data);
+  const fetchCustomerWithSales = async (id: number) => {
+    try {
+      const response = await api.get<Customer>(`/api/customers/${id}`);      
+      setCustomer(response.data);
+      setSales(response.data.sales || []);
+    } catch (error) {
+      console.error('Failed to fetch customer or sales:', error);
+      setCustomer(null);
+      setSales([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const totalSalesAmount = sales.reduce((total, sale) => total + sale.totalAmount, 0);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!customer) {
+    return <div>Customer not found or no sales available.</div>;
+  }
 
   return (
     <div>
-      <h1>Sales for Customer {id}</h1>
-      <h2>Total Sales Amount: ${totalSalesAmount.toFixed(2)}</h2>
-      {sales.map(sale => (
-        <div key={sale.saleId}>
-          <h3>Sale Id: {sale.saleId} - Date: {new Date(sale.saleDate).toLocaleDateString()}</h3>
-          <ul>
-            {sale.items.map(item => (
-              <li key={item.saleItemId}>
-                {item.productName} - Quantity: {item.quantity} - Total: ${item.totalPrice.toFixed(2)}
-              </li>
+      <h1 className="text-2xl font-bold mb-4">
+        Sales for {customer.firstName} {customer.lastName}
+      </h1>
+      <Link
+        to="/"
+        className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+      >
+        Back to Customers
+      </Link>
+      {sales.length > 0 ? (
+        <table className="min-w-full bg-white border">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b">Sale Date</th>
+              <th className="py-2 px-4 border-b">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sales.map(sale => (
+              <tr key={sale.saleId}>
+                <td className="py-2 px-4 border-b">
+                  {new Date(sale.saleDate).toLocaleDateString()}
+                </td>
+                <td className="py-2 px-4 border-b">${sale.totalAmount.toFixed(2)}</td>
+              </tr>
             ))}
-          </ul>
-        </div>
-      ))}
+          </tbody>
+        </table>
+      ) : (
+        <div>No sales found for this customer.</div>
+      )}
     </div>
   );
 };

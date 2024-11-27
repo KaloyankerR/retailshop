@@ -1,9 +1,7 @@
-// src/components/ProductList.tsx
-
-import React, { useEffect, useState } from 'react';
-import api from '../api/axiosConfig';
-import { Product } from '../types/Product';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import api from "../api/axiosConfig";
+import { Product } from "../types/Product";
+import { Link } from "react-router-dom";
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -14,10 +12,10 @@ const ProductList: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get<Product[]>('/api/products');
+      const response = await api.get<Product[]>("/api/products");
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -26,7 +24,7 @@ const ProductList: React.FC = () => {
       await api.delete(`/api/products/${id}`);
       setProducts(products.filter((product) => product.productId !== id));
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error("Error deleting product:", error);
     }
   };
 
